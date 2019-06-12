@@ -17,25 +17,19 @@
 
 ## Описание
 
-Реализовал: 1(Через google), 3 пункты
+Реализовал: 1(Через google), 3, 5 пункты
 
 ## Инструкция
 
-1. В `application.properties` настроить:
-    + 1 Доступ к СУБД PostgreSQL
-    ```
-    spring.datasource.url=
-    spring.datasource.username=
-    spring.datasource.password=
-    ```
-    + 2 OAuth 2.
+1. В `docker-compose.yml` настроить:
+    + OAuth 2.
     ```
     Идентификатор и секретный ключ получает тут -> https://console.cloud.google.com/
     security.oauth2.client.clientId=Идентификатор
     security.oauth2.client.clientSecret=Секретный ключ
     ```
 
-2. Запустить решение
+2. docker-compose up -d
 
 ## Описание
 

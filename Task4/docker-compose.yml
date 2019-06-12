@@ -1,0 +1,30 @@
+version: '3.4'
+
+services:
+  db:
+    container_name: pasta_db
+    image: postgres
+    restart: always
+    volumes:
+      - db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=pasta
+      - POSTGRES_USER=pasta
+      - POSTGRES_DB=pasta
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+
+  app:
+    container_name: pasta_app
+    build: .
+    environment:
+      security.oauth2.client.clientId: ""
+      security.oauth2.client.clientSecret: ""
+    ports:
+      - '8080:8080'
+    depends_on:
+      - db
+
+volumes:
+  db: {}
