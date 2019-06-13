@@ -19,8 +19,5 @@ data class User(
 
         var gender: String? = null,
 
-        var locale: String? = null,
-
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-        var lastVisit: LocalDateTime? = null
+        var locale: String? = null
 ) : Serializable

@@ -18,7 +18,7 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
     override fun configure(http: HttpSecurity) {
         http
                 .authorizeRequests()
-                .antMatchers("/login").permitAll()
+                .antMatchers("/api/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .csrf().disable()
@@ -40,7 +40,6 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
                 )
             }
 
-            user.lastVisit = LocalDateTime.now()
             userDetailsRepo.save(user)
         }
     }
