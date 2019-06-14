@@ -31,16 +31,13 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
     @Bean
     fun principalExtractor(userDetailsRepo: UserDetailsRepository): PrincipalExtractor {
         return PrincipalExtractor { map ->
-            val id: String = map["sub"] as String
+            val googleId: String = map["sub"] as String
 
-            val user = userDetailsRepo.findById(id).orElseGet {
+            val user = userDetailsRepo.findByGoogleId(googleId).orElseGet {
                 User(
-                        id = id,
+                        google_id = googleId,
                         name = map["name"] as String,
-                        userpic = map["picture"] as String,
-                        email = map["email"] as String,
-                        gender = map["gender"] as String?,
-                        locale = map["locale"] as String
+                        email = map["email"] as String
                 )
             }
 
