@@ -14,6 +14,7 @@ import ru.danil42russia.pasta.model.Private
 import ru.danil42russia.pasta.repository.PastaRepository
 import ru.danil42russia.pasta.repository.UserRepository
 import ru.danil42russia.pasta.service.PastaService
+import ru.danil42russia.pasta.service.UserService
 import java.time.Instant
 import java.util.*
 
@@ -22,7 +23,8 @@ import java.util.*
 class PastaController(
         private val pastaRepository: PastaRepository,
         private val userRepository: UserRepository,
-        private val pastaService: PastaService
+        private val pastaService: PastaService,
+        private val userService: UserService
 ) {
     @GetMapping
     @JsonView(PastaView.PastaList::class)
@@ -72,11 +74,11 @@ class PastaController(
             if (user.isPresent) {
                 author = user.get()
             } else {
-                throw InvalidDevTokenException()
+                throw InvalidTokenException()
             }
         } else {
             if (private == Private.PRIVATE) {
-                throw InvalidDevTokenException()
+                throw InvalidTokenException()
             }
         }
 
@@ -97,6 +99,17 @@ class PastaController(
         return pastaRepository.save(pasta)
     }
 
+    @GetMapping("/my_pasta")
+    @JsonView(PastaView.PastaOne::class)
+    fun myPasta(
+            @RequestParam(name = "pasta_token", required = false) token: String?
+    ): List<Pasta> {
+        if (token != null && userService.tokenIsValid(token)) {
+            return pastaRepository.getMyPasta(token)
+        } else {
+            throw InvalidTokenException()
+        }
+    }
 
     @ExceptionHandler(TextEmptyException::class)
     fun handleTest(exception: TextEmptyException): ResponseEntity<MyError> {
@@ -123,8 +136,8 @@ class PastaController(
         return ResponseEntity(MyError(message = "Bad API request, ${exception.parameterName}"), HttpStatus.BAD_REQUEST)
     }
 
-    @ExceptionHandler(InvalidDevTokenException::class)
-    fun handleInvalidDevToken(exception: InvalidDevTokenException): ResponseEntity<MyError> {
+    @ExceptionHandler(InvalidTokenException::class)
+    fun handleInvalidDevToken(exception: InvalidTokenException): ResponseEntity<MyError> {
         return ResponseEntity(MyError(message = exception.message), HttpStatus.BAD_REQUEST)
     }
 }

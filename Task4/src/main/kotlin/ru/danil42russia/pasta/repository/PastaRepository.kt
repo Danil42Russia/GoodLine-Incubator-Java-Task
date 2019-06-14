@@ -26,4 +26,9 @@ interface PastaRepository : JpaRepository<Pasta, Long> {
             @Param("thisDate") date: Long,
             @Param("searchText") text: String
     ): List<Pasta>
+
+    @Query("select p from Pasta p left join User u on p.author = u.id where u.token = :token order by p.id desc ")
+    fun getMyPasta(
+            @Param("token") token: String
+    ): List<Pasta>
 }
