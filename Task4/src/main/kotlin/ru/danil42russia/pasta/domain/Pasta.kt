@@ -38,5 +38,9 @@ class Pasta(
         @JsonProperty("pasta_text")
         @JsonView(PastaView.Text::class)
         @Column(columnDefinition = "Text")
-        var text: String? = null
+        var text: String? = null,
+
+        @ManyToOne
+        @JsonView(PastaView.User::class)
+        var author: User? = null
 )

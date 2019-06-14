@@ -19,14 +19,14 @@ class UserController{
 
     @GetMapping("/get_token")
     @JsonView(UserView.Token::class)
-    fun test(
+    fun getToken(
             @AuthenticationPrincipal user: User?
     ): User {
         return user ?: throw UserNotAuthenticationException()
     }
 
     @ExceptionHandler(UserNotAuthenticationException::class)
-    fun handlePastaNotFound(exception: UserNotAuthenticationException): ResponseEntity<MyError> {
+    fun handleUserNotAuthentication(exception: UserNotAuthenticationException): ResponseEntity<MyError> {
         return ResponseEntity(MyError(message = exception.message), HttpStatus.BAD_REQUEST)
     }
 }

@@ -54,6 +54,7 @@
 | pasta_expire_date | Время доступа         | String    |       Таблица 3       |           -           |       +       |
 | pasta_text        | Текст                 | String    |                       |           -           |       +       |
 | pasta_title       | Заголосок             | String    |                       |       Untitled        |       -       |
+| pasta_token       | Токен                 | String    |                       |           -           |       -       |
  
 Таблица 3. Значение времени жизни пасты
  
@@ -73,6 +74,7 @@
 | --------- | --------- | :-----------------------: |
 |     0     | public    | доступна всем             |
 |     1     | unlisted  | доступна только по ссылке |
+|     2     | private   | доступно только мне       |
 
 Таблица 5. Ошибки
 
@@ -82,5 +84,6 @@
 | Bad API request, invalid pasta_expire_date    | Неправильное значение                          |
 | Bad API request, pasta_text was empty         | Пустое значение                                |
 | Bad API request, pasta not found              | Неправильный хэш/вышло время доступа к пасте   |
+| Bad API request, invalid pasta_token          | Не передан токен                               |
 | Bad API request, {параметр}                   | Не передан параметр                            |
 | User is not authorized                        | Пользователь не авторизирован                  |

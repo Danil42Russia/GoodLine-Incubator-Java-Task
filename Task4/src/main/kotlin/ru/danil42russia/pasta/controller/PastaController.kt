@@ -7,12 +7,12 @@ import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.*
 import ru.danil42russia.pasta.domain.MyError
 import ru.danil42russia.pasta.domain.Pasta
+import ru.danil42russia.pasta.domain.User
+import ru.danil42russia.pasta.exceptions.*
 import ru.danil42russia.pasta.view.PastaView
-import ru.danil42russia.pasta.exceptions.InvalidPrivateException
-import ru.danil42russia.pasta.exceptions.InvalidTimeException
-import ru.danil42russia.pasta.exceptions.PastaNotFoundException
-import ru.danil42russia.pasta.exceptions.TextEmptyException
+import ru.danil42russia.pasta.model.Private
 import ru.danil42russia.pasta.repository.PastaRepository
+import ru.danil42russia.pasta.repository.UserRepository
 import ru.danil42russia.pasta.service.PastaService
 import java.time.Instant
 import java.util.*
@@ -21,6 +21,7 @@ import java.util.*
 @RequestMapping("api")
 class PastaController(
         private val pastaRepository: PastaRepository,
+        private val userRepository: UserRepository,
         private val pastaService: PastaService
 ) {
     @GetMapping
@@ -55,24 +56,42 @@ class PastaController(
     @PostMapping
     @JsonView(PastaView.PastaOne::class)
     fun addPasta(
-            @RequestParam(name = "pasta_title", required = false) title: String,
+            @RequestParam(name = "pasta_title", defaultValue = "Untitled") title: String,
             @RequestParam(name = "pasta_private") code: String,
             @RequestParam(name = "pasta_expire_date") expireDate: String,
-            @RequestParam(name = "pasta_text") text: String
+            @RequestParam(name = "pasta_text") text: String,
+            @RequestParam(name = "pasta_token", required = false) token: String?
     ): Pasta {
         val date = Instant.now().epochSecond
+        val private = pastaService.codeToPrivate(code)
+        var author: User? = null
+
+        if (token != null) {
+            val user = userRepository.findByToken(token)
+
+            if (user.isPresent) {
+                author = user.get()
+            } else {
+                throw InvalidDevTokenException()
+            }
+        } else {
+            if (private == Private.PRIVATE) {
+                throw InvalidDevTokenException()
+            }
+        }
 
         if (text.isEmpty()) {
             throw TextEmptyException()
         }
 
         val pasta = Pasta(
-                title = pastaService.getTitle(title),
-                private = pastaService.codeToPrivate(code),
+                title = title,
+                private = private,
                 creationDate = date,
                 expireDate = pastaService.expireDate(date, pastaService.abbreviationToTime(expireDate)),
                 text = text,
-                hash = UUID.randomUUID()
+                hash = UUID.randomUUID(),
+                author = author
         )
 
         return pastaRepository.save(pasta)
@@ -102,5 +121,10 @@ class PastaController(
     @ExceptionHandler(MissingServletRequestParameterException::class)
     fun handlePastaNotFound(exception: MissingServletRequestParameterException): ResponseEntity<MyError> {
         return ResponseEntity(MyError(message = "Bad API request, ${exception.parameterName}"), HttpStatus.BAD_REQUEST)
+    }
+
+    @ExceptionHandler(InvalidDevTokenException::class)
+    fun handleInvalidDevToken(exception: InvalidDevTokenException): ResponseEntity<MyError> {
+        return ResponseEntity(MyError(message = exception.message), HttpStatus.BAD_REQUEST)
     }
 }

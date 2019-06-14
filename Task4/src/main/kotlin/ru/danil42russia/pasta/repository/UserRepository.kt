@@ -8,9 +8,14 @@ import ru.danil42russia.pasta.domain.User
 import java.util.*
 
 @Repository
-interface UserDetailsRepository : JpaRepository<User, String> {
+interface UserRepository : JpaRepository<User, String> {
     @Query("select u from User u where u.google_id = :google_id")
     fun findByGoogleId(
             @Param("google_id") text: String
+    ): Optional<User>
+
+    @Query("select u from User u where u.token= :token")
+    fun findByToken(
+            @Param("token") token: String
     ): Optional<User>
 }

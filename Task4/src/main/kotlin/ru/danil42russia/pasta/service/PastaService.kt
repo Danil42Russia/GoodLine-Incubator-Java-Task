@@ -47,10 +47,6 @@ class PastaService {
         return newDate / 1000L
     }
 
-    fun getTitle(title: String?): String {
-        return title ?: "Untitled"
-    }
-
     fun codeToPrivate(source: String): Private {
         return Private.values().find { it.code.toString() == source } ?: throw InvalidPrivateException()
     }

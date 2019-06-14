@@ -26,5 +26,5 @@ data class User(
 
         @JsonProperty("pasta_token")
         @JsonView(UserView.Token::class)
-        val token: UUID? = null
+        val token: String? = null
 )
