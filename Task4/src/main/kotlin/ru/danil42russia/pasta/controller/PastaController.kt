@@ -7,7 +7,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.*
 import ru.danil42russia.pasta.domain.MyError
 import ru.danil42russia.pasta.domain.Pasta
-import ru.danil42russia.pasta.domain.Views
+import ru.danil42russia.pasta.view.PastaView
 import ru.danil42russia.pasta.exceptions.InvalidPrivateException
 import ru.danil42russia.pasta.exceptions.InvalidTimeException
 import ru.danil42russia.pasta.exceptions.PastaNotFoundException
@@ -24,14 +24,14 @@ class PastaController(
         private val pastaService: PastaService
 ) {
     @GetMapping
-    @JsonView(Views.PastaList::class)
+    @JsonView(PastaView.PastaList::class)
     fun list(): List<Pasta> {
         val date = Instant.now().epochSecond
         return pastaRepository.findAllNotPublic(date)
     }
 
     @GetMapping("{hash}")
-    @JsonView(Views.PastaOne::class)
+    @JsonView(PastaView.PastaOne::class)
     fun getPastaFromHash(
             @PathVariable("hash") hash: String
     ): Pasta {
@@ -40,7 +40,7 @@ class PastaController(
     }
 
     @PostMapping("/search")
-    @JsonView(Views.PastaOne::class)
+    @JsonView(PastaView.PastaOne::class)
     fun search(
             @RequestParam(name = "text") text: String
     ): List<Pasta> {
@@ -53,7 +53,7 @@ class PastaController(
     }
 
     @PostMapping
-    @JsonView(Views.PastaOne::class)
+    @JsonView(PastaView.PastaOne::class)
     fun addPasta(
             @RequestParam(name = "pasta_title", required = false) title: String,
             @RequestParam(name = "pasta_private") code: String,

@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import ru.danil42russia.pasta.repository.UserDetailsRepository
 import ru.danil42russia.pasta.domain.User
+import java.util.*
 
 @Configuration
 @EnableWebSecurity
@@ -37,7 +38,8 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
                 User(
                         google_id = googleId,
                         name = map["name"] as String,
-                        email = map["email"] as String
+                        email = map["email"] as String,
+                        token = UUID.randomUUID()
                 )
             }
 

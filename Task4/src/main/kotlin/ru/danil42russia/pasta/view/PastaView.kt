@@ -1,6 +1,6 @@
-package ru.danil42russia.pasta.domain
+package ru.danil42russia.pasta.view
 
-interface Views {
+interface PastaView {
     interface ID
     interface Hash
     interface Title
