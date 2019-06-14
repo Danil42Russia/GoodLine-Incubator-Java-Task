@@ -1,3 +1,3 @@
 package ru.danil42russia.pasta.exceptions
 
-class InvalidTokenException: RuntimeException("Bad API request, invalid pasta_dev_token")
+class InvalidTokenException: RuntimeException("Bad API request, invalid pasta_token")
