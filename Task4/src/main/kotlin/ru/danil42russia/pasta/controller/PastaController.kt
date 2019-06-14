@@ -39,7 +39,7 @@ class PastaController(
             @PathVariable("hash") hash: String
     ): Pasta {
         val date = Instant.now().epochSecond
-        return pastaRepository.findByHash(date, pastaService.parseHash(hash)) ?: throw PastaNotFoundException()
+        return pastaRepository.findByHash(date, hash) ?: throw PastaNotFoundException()
     }
 
     @PostMapping("/search")
@@ -92,7 +92,7 @@ class PastaController(
                 creationDate = date,
                 expireDate = pastaService.expireDate(date, pastaService.abbreviationToTime(expireDate)),
                 text = text,
-                hash = UUID.randomUUID(),
+                hash = UUID.randomUUID().toString(),
                 author = author
         )
 
@@ -102,10 +102,28 @@ class PastaController(
     @GetMapping("/my_pasta")
     @JsonView(PastaView.PastaOne::class)
     fun myPasta(
-            @RequestParam(name = "pasta_token", required = false) token: String?
+            @RequestParam(name = "pasta_token") token: String
     ): List<Pasta> {
-        if (token != null && userService.tokenIsValid(token)) {
+        if (userService.tokenIsValid(token)) {
             return pastaRepository.getMyPasta(token)
+        } else {
+            throw InvalidTokenException()
+        }
+    }
+
+    //TODO меняет чужие пасты
+    @PutMapping("{hash}")
+    @JsonView(PastaView.PastaOne::class)
+    fun updatePastaPrivate(
+            @PathVariable("hash") hash: String,
+            @RequestParam(name = "pasta_token") token: String,
+            @RequestParam(name = "pasta_private") code: String
+    ) {
+        if (userService.tokenIsValid(token)) {
+            val date = Instant.now().epochSecond
+            val private = pastaService.codeToPrivate(code)
+
+            return pastaRepository.updatePrivateToken(date, hash, private)
         } else {
             throw InvalidTokenException()
         }
@@ -133,7 +151,7 @@ class PastaController(
 
     @ExceptionHandler(MissingServletRequestParameterException::class)
     fun handlePastaNotFound(exception: MissingServletRequestParameterException): ResponseEntity<MyError> {
-        return ResponseEntity(MyError(message = "Bad API request, ${exception.parameterName}"), HttpStatus.BAD_REQUEST)
+        return ResponseEntity(MyError(message = "Bad API request, ${exception.parameterName} not found"), HttpStatus.BAD_REQUEST)
     }
 
     @ExceptionHandler(InvalidTokenException::class)

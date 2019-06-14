@@ -54,12 +54,4 @@ class PastaService {
     fun abbreviationToTime(abbreviation: String): Time {
         return Time.values().find { it.abbreviation == abbreviation } ?: throw InvalidTimeException()
     }
-
-    fun parseHash(uuid: String): UUID {
-        try {
-            return UUID.fromString(uuid)
-        } catch (ex: IllegalArgumentException) {
-            throw PastaNotFoundException()
-        }
-    }
 }

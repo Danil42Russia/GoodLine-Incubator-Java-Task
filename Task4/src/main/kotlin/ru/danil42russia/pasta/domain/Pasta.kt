@@ -17,7 +17,7 @@ class Pasta(
 
         @JsonProperty("pasta_hash")
         @JsonView(PastaView.Hash::class)
-        var hash: UUID? = null,
+        var hash: String? = null,
 
         @JsonProperty("pasta_title")
         @JsonView(PastaView.Title::class)
